@@ -14,38 +14,50 @@
             margin: 0;
             font-family: 'Arial', sans-serif;
             color: #fff;
+            overflow: hidden;
         }
         .container {
             display: flex;
-            gap: 20px;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
         }
         .game-container {
             background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
+            padding: 10px;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             text-align: center;
+            width: 100%;
+            max-width: 400px;
         }
         canvas {
             border: 2px solid #00ffcc;
             border-radius: 10px;
             background: #111;
+            width: 100%;
+            height: auto;
+            max-width: 400px;
+            max-height: 400px;
         }
         .score-board {
-            font-size: 24px;
-            margin-bottom: 15px;
+            font-size: 20px;
+            margin-bottom: 10px;
             text-shadow: 0 0 10px #00ffcc;
         }
         .leaderboard {
             background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
+            padding: 10px;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            width: 200px;
+            width: 100%;
+            max-width: 200px;
         }
         .leaderboard h2 {
             margin-top: 0;
             text-shadow: 0 0 10px #00ffcc;
+            font-size: 18px;
         }
         .leaderboard ul {
             list-style: none;
@@ -53,16 +65,18 @@
         }
         .leaderboard li {
             margin: 5px 0;
-            font-size: 16px;
+            font-size: 14px;
         }
         button, input {
-            padding: 10px;
-            font-size: 16px;
+            padding: 8px;
+            font-size: 14px;
             background: #00ffcc;
             border: none;
             border-radius: 5px;
             margin: 5px;
             transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            max-width: 150px;
         }
         button:hover, input:hover {
             transform: scale(1.05);
@@ -72,13 +86,22 @@
             background: #fff;
             color: #000;
         }
+        @media (min-width: 600px) {
+            .container {
+                flex-direction: row;
+                gap: 20px;
+            }
+            .game-container, .leaderboard {
+                width: auto;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="game-container">
             <div class="score-board">Puan: <span id="score">0</span></div>
-            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            <canvas id="gameCanvas"></canvas>
             <br>
             <input type="text" id="nickname" placeholder="Nick giriniz" maxlength="15">
             <button onclick="startGame()">Oyunu Başlat</button>
@@ -89,7 +112,7 @@
         </div>
     </div>
 
-    <!-- Firebase SDK (Eski Sürüm, Modül Dışı) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -116,6 +139,11 @@
         const nicknameInput = document.getElementById('nickname');
         const leaderboardList = document.getElementById('leaderboardList');
 
+        // Canvas boyutunu dinamik yap
+        const maxCanvasSize = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.6, 400);
+        canvas.width = maxCanvasSize;
+        canvas.height = maxCanvasSize;
+
         const gridSize = 20;
         const tileCount = canvas.width / gridSize;
 
@@ -137,6 +165,41 @@
         });
 
         document.addEventListener('keydown', changeDirection);
+        canvas.addEventListener('touchstart', handleTouchStart, false);
+        canvas.addEventListener('touchmove', handleTouchMove, false);
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        function handleTouchStart(event) {
+            const touch = event.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            event.preventDefault();
+        }
+
+        function handleTouchMove(event) {
+            const touch = event.touches[0];
+            const touchEndX = touch.clientX;
+            const touchEndY = touch.clientY;
+
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                // Yatay kaydırma
+                if (deltaX > 0 && dx !== -1) { dx = 1; dy = 0; } // Sağ
+                else if (deltaX < 0 && dx !== 1) { dx = -1; dy = 0; } // Sol
+            } else {
+                // Dikey kaydırma
+                if (deltaY > 0 && dy !== -1) { dx = 0; dy = 1; } // Aşağı
+                else if (deltaY < 0 && dy !== 1) { dx = 0; dy = -1; } // Yukarı
+            }
+
+            touchStartX = touchEndX;
+            touchStartY = touchEndY;
+            event.preventDefault();
+        }
 
         function startGame() {
             playerName = nicknameInput.value.trim();
@@ -225,6 +288,13 @@
                 leaderboardList.appendChild(li);
             });
         }
+
+        // Pencere yeniden boyutlandırıldığında canvas’i güncelle
+        window.addEventListener('resize', () => {
+            const newSize = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.6, 400);
+            canvas.width = newSize;
+            canvas.height = newSize;
+        });
     </script>
 </body>
 </html>
