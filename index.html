@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Yılan Oyunu</title>
+    <title>Ekşi Sözlük Yılan Oyunu</title>
     <style>
         body {
             display: flex;
@@ -86,6 +86,20 @@
             background: #fff;
             color: #000;
         }
+        .mobile-notice {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ffcc;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 16px;
+            z-index: 1000;
+            display: none;
+        }
         @media (min-width: 600px) {
             .container {
                 flex-direction: row;
@@ -100,6 +114,7 @@
 <body>
     <div class="container">
         <div class="game-container">
+            <h1 style="font-size: 24px; text-shadow: 0 0 10px #00ffcc; margin: 0 0 10px;">Ekşi Sözlük Yılan Oyunu</h1>
             <div class="score-board">Puan: <span id="score">0</span></div>
             <canvas id="gameCanvas"></canvas>
             <br>
@@ -111,13 +126,16 @@
             <ul id="leaderboardList"></ul>
         </div>
     </div>
+    <div class="mobile-notice" id="mobileNotice">
+        Oyunu parmağınızla kaydırarak kontrol edebilirsiniz!<br>Bu mesaj 3 saniye içinde kaybolacak.
+    </div>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-       const firebaseConfig = {
+        const firebaseConfig = {
   apiKey: "AIzaSyByL0ABJnPGlX0v8k40oQL2Mt1F53MXkUw",
   authDomain: "eksisnake-852b3.firebaseapp.com",
   databaseURL: "https://eksisnake-852b3-default-rtdb.firebaseio.com",
@@ -138,6 +156,7 @@
         const scoreElement = document.getElementById('score');
         const nicknameInput = document.getElementById('nickname');
         const leaderboardList = document.getElementById('leaderboardList');
+        const mobileNotice = document.getElementById('mobileNotice');
 
         // Canvas boyutunu dinamik yap
         const maxCanvasSize = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.6, 400);
@@ -187,13 +206,11 @@
             const deltaY = touchEndY - touchStartY;
 
             if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                // Yatay kaydırma
-                if (deltaX > 0 && dx !== -1) { dx = 1; dy = 0; } // Sağ
-                else if (deltaX < 0 && dx !== 1) { dx = -1; dy = 0; } // Sol
+                if (deltaX > 0 && dx !== -1) { dx = 1; dy = 0; }
+                else if (deltaX < 0 && dx !== 1) { dx = -1; dy = 0; }
             } else {
-                // Dikey kaydırma
-                if (deltaY > 0 && dy !== -1) { dx = 0; dy = 1; } // Aşağı
-                else if (deltaY < 0 && dy !== 1) { dx = 0; dy = -1; } // Yukarı
+                if (deltaY > 0 && dy !== -1) { dx = 0; dy = 1; }
+                else if (deltaY < 0 && dy !== 1) { dx = 0; dy = -1; }
             }
 
             touchStartX = touchEndX;
@@ -295,6 +312,14 @@
             canvas.width = newSize;
             canvas.height = newSize;
         });
+
+        // Mobil cihazda not göster
+        if (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+            mobileNotice.style.display = 'block';
+            setTimeout(() => {
+                mobileNotice.style.display = 'none';
+            }, 3000);
+        }
     </script>
 </body>
 </html>
