@@ -81,7 +81,7 @@
             <canvas id="gameCanvas" width="400" height="400"></canvas>
             <br>
             <input type="text" id="nickname" placeholder="Nick giriniz" maxlength="15">
-            <button onclick="startGame()">Oyunu Başlat</button>
+            <button id="startButton">Oyunu Başlat</button>
         </div>
         <div class="leaderboard">
             <h2>En İyi Skorlar</h2>
@@ -90,12 +90,11 @@
     </div>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
-    <script>
-        // Firebase yapılandırmanızı buraya yapıştırın
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+        import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
-const firebaseConfig = {
+        const firebaseConfig = {
   apiKey: "AIzaSyByL0ABJnPGlX0v8k40oQL2Mt1F53MXkUw",
   authDomain: "eksisnake-852b3.firebaseapp.com",
   databaseURL: "https://eksisnake-852b3-default-rtdb.firebaseio.com",
@@ -104,8 +103,23 @@ const firebaseConfig = {
   messagingSenderId: "944740018611",
   appId: "1:944740018611:web:3e010641c2774aec4903c6"
 };
-        firebase.initializeApp(firebaseConfig);
+
+        // Firebase’i başlat
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Global erişim için pencere nesnesine ekle
+        window.firebaseFunctions = {
+            db,
+            ref,
+            onValue,
+            set
+        };
+
+        // script.js yüklendikten sonra çalıştırılacak kod
+        import('./script.js').then(() => {
+            document.getElementById('startButton').addEventListener('click', window.startGame);
+        });
     </script>
-    <script src="script.js"></script>
 </body>
 </html>

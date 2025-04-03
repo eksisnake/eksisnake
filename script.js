@@ -16,12 +16,14 @@ let speed = 100;
 let gameLoop;
 let playerName = '';
 
-// Firebase veritabanı referansı
-const db = firebase.database();
-const leaderboardRef = db.ref('leaderboard');
+// Firebase fonksiyonlarını global nesneden al
+const { db, ref, onValue, set } = window.firebaseFunctions;
 
-// Skorları Firebase'dan yükle
-leaderboardRef.on('value', (snapshot) => {
+// Firebase veritabanı referansı
+const leaderboardRef = ref(db, 'leaderboard');
+
+// Skorları Firebase’dan yükle
+onValue(leaderboardRef, (snapshot) => {
     const data = snapshot.val();
     const leaderboard = data ? Object.values(data) : [];
     leaderboard.sort((a, b) => b.score - a.score);
@@ -30,7 +32,7 @@ leaderboardRef.on('value', (snapshot) => {
 
 document.addEventListener('keydown', changeDirection);
 
-function startGame() {
+window.startGame = function() {
     playerName = nicknameInput.value.trim();
     if (!playerName) {
         alert('Lütfen bir nick giriniz!');
@@ -45,7 +47,7 @@ function startGame() {
     scoreElement.textContent = score;
     spawnFood();
     gameLoop = setInterval(drawGame, speed);
-}
+};
 
 function drawGame() {
     const head = { x: snake[0].x + dx, y: snake[0].y + dy };
@@ -105,8 +107,8 @@ function snakeCollision(head) {
 
 function saveScore(name, score) {
     const newScore = { name, score };
-    const scoreId = Date.now(); // Benzersiz bir ID için timestamp kullanıyoruz
-    leaderboardRef.child(scoreId).set(newScore);
+    const scoreId = Date.now();
+    set(ref(db, 'leaderboard/' + scoreId), newScore);
 }
 
 function updateLeaderboard(leaderboard) {
