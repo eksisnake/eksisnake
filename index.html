@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Yılan Oyunu</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e1e1e, #2d2d2d);
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .game-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        canvas {
+            border: 2px solid #00ffcc;
+            border-radius: 10px;
+            background: #111;
+        }
+        .score-board {
+            font-size: 24px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #00ffcc;
+        }
+        .leaderboard {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 200px;
+        }
+        .leaderboard h2 {
+            margin-top: 0;
+            text-shadow: 0 0 10px #00ffcc;
+        }
+        .leaderboard ul {
+            list-style: none;
+            padding: 0;
+        }
+        .leaderboard li {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        button, input {
+            padding: 10px;
+            font-size: 16px;
+            background: #00ffcc;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover, input:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #00ffcc;
+        }
+        input {
+            background: #fff;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-container">
+            <div class="score-board">Puan: <span id="score">0</span></div>
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            <br>
+            <input type="text" id="nickname" placeholder="Nick giriniz" maxlength="15">
+            <button onclick="startGame()">Oyunu Başlat</button>
+        </div>
+        <div class="leaderboard">
+            <h2>En İyi Skorlar</h2>
+            <ul id="leaderboardList"></ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
