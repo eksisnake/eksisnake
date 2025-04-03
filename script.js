@@ -16,10 +16,19 @@ let speed = 100;
 let gameLoop;
 let playerName = '';
 
-document.addEventListener('keydown', changeDirection);
+// Firebase veritabanı referansı
+const db = firebase.database();
+const leaderboardRef = db.ref('leaderboard');
 
-let leaderboard = JSON.parse(localStorage.getItem('snakeLeaderboard')) || [];
-updateLeaderboard();
+// Skorları Firebase'dan yükle
+leaderboardRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    const leaderboard = data ? Object.values(data) : [];
+    leaderboard.sort((a, b) => b.score - a.score);
+    updateLeaderboard(leaderboard.slice(0, 10));
+});
+
+document.addEventListener('keydown', changeDirection);
 
 function startGame() {
     playerName = nicknameInput.value.trim();
@@ -95,14 +104,12 @@ function snakeCollision(head) {
 }
 
 function saveScore(name, score) {
-    leaderboard.push({ name, score });
-    leaderboard.sort((a, b) => b.score - a.score);
-    leaderboard = leaderboard.slice(0, 10);
-    localStorage.setItem('snakeLeaderboard', JSON.stringify(leaderboard));
-    updateLeaderboard();
+    const newScore = { name, score };
+    const scoreId = Date.now(); // Benzersiz bir ID için timestamp kullanıyoruz
+    leaderboardRef.child(scoreId).set(newScore);
 }
 
-function updateLeaderboard() {
+function updateLeaderboard(leaderboard) {
     leaderboardList.innerHTML = '';
     leaderboard.forEach((entry, index) => {
         const li = document.createElement('li');

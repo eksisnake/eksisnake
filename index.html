@@ -88,6 +88,24 @@
             <ul id="leaderboardList"></ul>
         </div>
     </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+    <script>
+        // Firebase yapılandırmanızı buraya yapıştırın
+
+const firebaseConfig = {
+  apiKey: "AIzaSyByL0ABJnPGlX0v8k40oQL2Mt1F53MXkUw",
+  authDomain: "eksisnake-852b3.firebaseapp.com",
+  databaseURL: "https://eksisnake-852b3-default-rtdb.firebaseio.com",
+  projectId: "eksisnake-852b3",
+  storageBucket: "eksisnake-852b3.firebasestorage.app",
+  messagingSenderId: "944740018611",
+  appId: "1:944740018611:web:3e010641c2774aec4903c6"
+};
+        firebase.initializeApp(firebaseConfig);
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
